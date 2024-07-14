@@ -1,0 +1,30 @@
+const int phSensorPin = 0;  // pH sensor connected to analog input A0
+const float phOffset = 0.0;  // pH offset value (calibrate this value for your sensor)
+
+void setup() {
+  Serial.begin(9600);  // initialize serial communication at 9600 bps
+}
+void loop() {
+  int sensorReading = analogRead(phSensorPin);  // read the pH sensor output
+  float voltage = sensorReading * 5.0 / 1023.0;  // convert analog reading to voltage (0-5V)
+  float phValue = 7.0 + (voltage - 2.9) / 0.18;  // calculate pH value using the linear equation
+
+  // Apply pH offset value (calibrate this value for your sensor)
+  phValue += phOffset;
+
+  // Ensure pH value is within a valid range (0-14)
+  phValue = constrain(phValue, 0.0, 14.0);
+
+  Serial.print("pH value: ");  // print pH value
+  Serial.print(phValue, 2);
+
+  if (phValue < 6.80) {
+    Serial.println(" - Acidic");
+  } else if (phValue >= 6.9 && phValue <= 7.11) {
+    Serial.println(" - Neutral");
+  } else {
+    Serial.println(" - Base");
+  }
+
+  delay(800);  // wait 800 milliseconds before taking the next reading
+}
